@@ -1,0 +1,3 @@
+# This file ensures the pages directory is tracked by git
+# Place Page Object Model files here during test generation
+

@@ -1,4 +1,4 @@
- {
+{
   "name": "y",
   "version": "1.0.0",
   "description": "native ai testing project",
@@ -14,5 +14,8 @@
     "playwright": "^1.60.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
   }
 }
