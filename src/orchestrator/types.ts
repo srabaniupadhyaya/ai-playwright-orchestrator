@@ -61,13 +61,14 @@ export interface TestScenario {
 }
 
 export interface TestPlan {
-  title: string;
+  id: string; // Added id to match prompt example
+  name: string; // Changed from title to name to match prompt example
   description: string;
   scope?: string;
   objectives?: string[];
   scenarios: TestScenario[];
-  createdAt: Date;
-  version: string;
+  createdAt?: Date; // Made optional as it's not in prompt example
+  version?: string; // Made optional as it's not in prompt example
 }
 
 // ============================================================================
@@ -92,18 +93,19 @@ export interface PageObjectModel {
   }[];
 }
 
-export interface GeneratedTest {
+export interface GeneratedTestFile {
   filePath: string;
-  fileName: string;
-  content: string;
-  imports: string[];
-  pageObjects?: PageObjectModel[];
-  language: "typescript" | "javascript";
-  generatedAt: Date;
+  code: string;
+}
+
+export interface TestCode {
+  filePath: string; // Main test file path
+  code: string;     // Main test file content
+  pageObjects?: GeneratedTestFile[]; // Array of page object files
 }
 
 export interface CodeGeneration {
-  tests: GeneratedTest[];
+  tests: GeneratedTestFile[];
   utilities?: string;
   helpers?: string;
 }
@@ -132,6 +134,16 @@ export interface TestSuiteResult {
   duration: number;
   results: TestExecutionResult[];
   timestamp: Date;
+}
+
+export interface TestRunReport {
+  success: boolean;
+  message: string;
+  // Add more detailed report data here as needed, e.g.,
+  // testPlan?: TestPlan;
+  // generatedCode?: TestCode;
+  // testSuiteResult?: TestSuiteResult;
+  // healingReport?: HealingReport;
 }
 
 // ============================================================================
@@ -192,7 +204,7 @@ export interface OrchestrationState {
   startTime: Date;
   requirement?: string;
   testPlan?: TestPlan;
-  generatedTests?: GeneratedTest[];
+  generatedTests?: GeneratedTestFile[];
   executionResults?: TestSuiteResult;
   healingReport?: HealingReport;
   errors: string[];
@@ -204,7 +216,7 @@ export interface OrchestrationReport {
   phases: Map<OrchestrationPhase, boolean>;
   totalDuration: number;
   testPlan?: TestPlan;
-  generatedTests?: GeneratedTest[];
+  generatedTests?: GeneratedTestFile[];
   executionResults?: TestSuiteResult;
   healingReport?: HealingReport;
   errors: string[];
@@ -297,5 +309,3 @@ export class HealingError extends OrchestratorError {
     this.name = "HealingError";
   }
 }
-
-

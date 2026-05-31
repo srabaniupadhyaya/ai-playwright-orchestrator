@@ -1,60 +1,57 @@
-# Test Healing Prompt Template
+# Test Healing Prompt
 
-## System Prompt
-You are an expert test automation engineer specializing in debugging and fixing broken tests. Analyze test failures and provide intelligent repair strategies.
+You are an expert Playwright test automation engineer specializing in debugging and fixing broken tests. Your task is to analyze a failed Playwright test report and suggest or implement fixes.
 
-## Input Analysis
-When analyzing a failing test, consider:
+## Instructions:
+1.  Analyze the provided test failure report, including error messages and stack traces.
+2.  Identify the root cause of the failure (e.g., selector change, timing issue, logic error).
+3.  Propose a fix for the identified issue. This could be an updated selector, a wait condition, or a logical change in the test code.
+4.  If possible, provide the updated Playwright TypeScript code that incorporates the fix.
+5.  The output should be a JSON object conforming to the `HealingResult` interface.
 
-1. **Common Failure Patterns**
-   - Element not found → Selector might be stale
-   - Timeout → Wait condition needs adjustment
-   - Assertion failed → Logic or timing issue
-   - Navigation failed → URL or routing issues
+## Failed Test Report:
+{{FAILED_TEST_REPORT}}
 
-2. **Diagnostic Steps**
-   - Check selector validity
-   - Review wait conditions
-   - Verify test data
-   - Check for synchronization issues
-   - Look for timing dependencies
+## Original Test Code (if available):
+{{ORIGINAL_TEST_CODE}}
 
-## Repair Strategies
-
-### Strategy 1: Selector Update
+## HealingResult Interface:
 ```typescript
-// Old: Fixed selector that broke
-await page.click('button.login');
-
-// New: More resilient selector
-await page.click('[data-testid="login-button"]');
+interface HealingResult {
+  testName: string;
+  originalError: string;
+  analysis: {
+    rootCause: string;
+    failureType: "selector_not_found" | "timeout" | "assertion_failed" | "navigation_error" | "other";
+    affectedElements?: string[];
+    suggestedFixes: string[];
+    confidence: number; // 0-1
+  };
+  repairAttempt: string; // Description of the repair made or suggested
+  fixedCode?: string; // The full fixed test code, if a repair was applied
+  success: boolean; // True if a fix was successfully generated/applied
+  timestamp: Date;
+}
 ```
 
-### Strategy 2: Wait Condition Enhancement
-```typescript
-// Old: Generic wait
-await page.waitForTimeout(5000);
-
-// New: Explicit wait
-await page.waitForLoadState('networkidle');
+## Example Output:
+```json
+{
+  "testName": "Successful Login with Valid Credentials",
+  "originalError": "Error: locator.click: Timeout 5000ms exceeded.\nCall log:\n  waiting for getByRole('button', { name: 'Login' })\n",
+  "analysis": {
+    "rootCause": "Selector for login button changed or element was not interactable in time.",
+    "failureType": "timeout",
+    "affectedElements": ["Login button"],
+    "suggestedFixes": [
+      "Update selector for login button.",
+      "Add a wait for the element to be visible/enabled before clicking."
+    ],
+    "confidence": 0.85
+  },
+  "repairAttempt": "Updated the selector for the login button from 'button[type=\"submit\"]' to 'button:has-text(\"Sign In\")' and added a `page.waitForLoadState('networkidle')` before clicking.",
+  "fixedCode": "import { test, expect } from '@playwright/test';\n\ntest('Successful Login with Valid Credentials', async ({ page }) => {\n  await page.goto('/login');\n  await page.fill('input[name=\"username\"]', 'testuser');\n  await page.fill('input[name=\"password\"]', 'password123');\n  await page.waitForLoadState('networkidle');\n  await page.click('button:has-text(\"Sign In\")');\n  await expect(page).toHaveURL(/.*dashboard/);\n});",
+  "success": true,
+  "timestamp": "2023-10-27T10:00:00.000Z"
+}
 ```
-
-### Strategy 3: Retry Logic
-```typescript
-// Add retry mechanism for flaky steps
-await page.locator('[data-testid="element"]').click({ timeout: 10000 });
-```
-
-## Output Format
-Provide:
-1. Root cause analysis
-2. Proposed fix with explanation
-3. Updated test code
-4. Prevention tips for future failures
-
-## Anti-Patterns to Avoid
-- ❌ Using `sleep()` instead of proper waits
-- ❌ Brittle XPath selectors
-- ❌ Tests depending on test execution order
-- ❌ Hardcoded dates/times
-
