@@ -5,6 +5,7 @@
 
 import { AgentLoop } from "./orchestrator/agent-loop";
 import { TestRunReport } from "./orchestrator/types";
+import config from './config';
 
 // Classes & Values
 export { AgentLoop } from "./orchestrator/agent-loop";
@@ -95,7 +96,7 @@ async function main() {
 
   console.log(`Starting orchestration for requirements: "${requirements}"`);
 
-  const agentLoop = new AgentLoop();
+  const agentLoop = new AgentLoop(config);
 
   try {
     const report: TestRunReport = await agentLoop.run(requirements);
