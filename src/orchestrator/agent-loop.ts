@@ -11,6 +11,7 @@ import {
   TestSuiteResult,
   OrchestratorConfig,
 } from './types';
+import GeminiClient from "./ai-client";
 
 export class AgentLoop {
   private planner: Planner;
@@ -20,8 +21,19 @@ export class AgentLoop {
   private config: OrchestratorConfig;
 
   constructor(config?: Partial<OrchestratorConfig>) {
-    this.planner = new Planner();
-    this.generator = new Generator();
+    // Initialize AI client
+    const apiKey = process.env.GEMINI_API_KEY ?? config?.ai?.apiKey ?? '';
+
+    if (!apiKey) {
+      throw new Error(
+          'Gemini API key is required. Set GEMINI_API_KEY environment variable or provide in config.'
+      );
+    }
+
+    const aiClient = new GeminiClient(apiKey, config?.ai?.model ?? 'gemini-2.0-flash');
+
+    this.planner = new Planner(aiClient);
+    this.generator = new Generator(aiClient);
     // Pass basic browser config (you can make this env-driven later)
     this.playwrightBridge = new PlaywrightBridge(
         {

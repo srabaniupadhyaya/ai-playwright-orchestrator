@@ -43,11 +43,12 @@ try {
 // Defaults
 // Build AI config without including undefined fields (to satisfy strict optional typing)
 const aiConfig: any = {
-    provider: (fileConfig?.ai?.provider as any) ?? 'openai',
-    apiKey: fileConfig?.ai?.apiKey ?? '',
+    provider: process.env.AI_PROVIDER ?? (fileConfig?.ai?.provider as any) ?? 'gemini',
+    apiKey: process.env.GEMINI_API_KEY ?? fileConfig?.ai?.apiKey ?? '',
 };
 if (fileConfig?.ai?.model !== undefined) aiConfig.model = fileConfig.ai.model;
-aiConfig.maxTokens = parseIntOr(fileConfig?.ai?.maxTokens, 2048);
+if (process.env.AI_MODEL) aiConfig.model = process.env.AI_MODEL;
+aiConfig.maxTokens = parseIntOr(process.env.AI_MAX_TOKENS ?? fileConfig?.ai?.maxTokens, 2048);
 
 // Build logging config, omit filePath when undefined
 const loggingConfig: any = {

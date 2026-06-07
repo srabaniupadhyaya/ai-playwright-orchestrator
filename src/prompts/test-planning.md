@@ -1,66 +1,62 @@
 # Test Planning Prompt
 
-You are an expert Quality Assurance engineer specializing in Playwright test automation. Your task is to create a comprehensive test plan based on the provided user requirements.
+You are an expert test automation engineer. Analyze the following test requirements and create a detailed test plan.
 
-## Instructions:
-1.  Analyze the user requirements carefully.
-2.  Break down the requirements into logical, independent test scenarios.
-3.  For each scenario, define a clear name, a brief description, and a detailed list of steps.
-4.  Ensure steps are actionable and describe user interactions or system behaviors.
-5.  Identify the expected outcome for each scenario.
-6.  The output should be a JSON object conforming to the `TestPlan` interface.
+## Requirements
+{REQUIREMENTS}
 
-## User Requirements:
-{{REQUIREMENTS}}
+## Your Task
+Generate a comprehensive test plan in JSON format with the following structure:
+- id: unique identifier
+- name: test plan name
+- description: detailed description
+- scenarios: array of test scenarios, each with:
+    - id: scenario id
+    - name: scenario name
+    - description: what this scenario tests
+    - preconditions: array of setup steps
+    - steps: array of test steps (action, selector, value, expectedBehavior)
+    - expectedResult: what should happen
+    - priority: high/medium/low
+    - tags: array of tags
 
-## TestPlan Interface:
-```typescript
-interface TestPlan {
-  id: string; // Unique identifier for the test plan
-  name: string; // Descriptive name for the test plan
-  description: string; // Overall description of the test plan
-  scenarios: {
-    id: string; // Unique identifier for the scenario
-    name: string; // Name of the test scenario (e.g., "Successful User Login")
-    steps: string[]; // Ordered list of steps (e.g., "Navigate to login page", "Enter username", "Click login")
-    expectedResult: string; // Expected outcome of the scenario
-  }[];
-}
-```
-
-## Example Output:
-```json
+## Example
 {
-  "id": "plan-example-1",
-  "name": "User Authentication Flow",
-  "description": "Comprehensive test plan for user login and logout functionalities.",
-  "scenarios": [
-    {
-      "id": "scenario-login-1",
-      "name": "Successful Login with Valid Credentials",
-      "steps": [
-        "Navigate to the login page.",
-        "Enter 'user@example.com' into the email field.",
-        "Enter 'password123' into the password field.",
-        "Click the 'Login' button.",
-        "Verify that the user is redirected to the dashboard page.",
-        "Verify that a 'Welcome, user@example.com!' message is displayed."
-      ],
-      "expectedResult": "User successfully logs in and is redirected to the dashboard."
-    },
-    {
-      "id": "scenario-login-2",
-      "name": "Login with Invalid Password",
-      "steps": [
-        "Navigate to the login page.",
-        "Enter 'user@example.com' into the email field.",
-        "Enter 'wrongpassword' into the password field.",
-        "Click the 'Login' button.",
-        "Verify that an error message 'Invalid credentials' is displayed.",
-        "Verify that the user remains on the login page."
-      ],
-      "expectedResult": "Login fails, and an error message is displayed."
-    }
-  ]
+"id": "plan-001",
+"name": "User Authentication Flow",
+"description": "Test user login and authentication workflows",
+"scenarios": [
+{
+"id": "scenario-1",
+"name": "Successful Login",
+"description": "User logs in with valid credentials",
+"preconditions": ["User account exists", "Application is loaded"],
+"steps": [
+{
+"action": "navigate",
+"value": "/login"
+},
+{
+"action": "fill",
+"selector": "input[name='email']",
+"value": "user@example.com"
+},
+{
+"action": "fill",
+"selector": "input[name='password']",
+"value": "securepassword"
+},
+{
+"action": "click",
+"selector": "button[type='submit']"
 }
-```
+],
+"expectedResult": "User is redirected to dashboard",
+"priority": "high",
+"tags": ["authentication", "login"]
+}
+]
+}
+
+## Output
+Return ONLY valid JSON, no markdown or extra text.
