@@ -49,6 +49,16 @@ npx ts-node src/index.ts "Test login with valid credentials"
 ```
 5. Review generated files in `playwright/tests/` and `playwright/pages/`, iterate prompt.
 
+## Actions performed (saved progress)
+- Replaced embedded API key in `.env.example` with a placeholder (`YOUR_GEMINI_API_KEY_HERE`).
+- Verified `config/config.json` contains an empty `ai.apiKey` field (safe defaults remain in repo).
+- Updated `src/config.ts` to prioritize environment variables (`GEMINI_API_KEY`, `AI_MODEL`, `AI_PROVIDER`, `AI_MAX_TOKENS`) when present.
+- Ensured `src/orchestrator/agent-loop.ts` validates presence of `GEMINI_API_KEY` and fails fast if missing.
+- Confirmed `.gitignore` already excludes `.env` files so local secret files are not committed.
+- Searched the repository to ensure the exposed key no longer appears in tracked files.
+
+These changes have been applied to the working tree (files modified: `.env.example`, `src/config.ts`). Commit and push the changes to your remote to persist them.
+
 ## Security note (IMPORTANT)
 Your `config/config.json` currently shows an API key. Do not leave provider keys in the repo. Rotate that key now and use CI secrets / environment variables for runtime secrets.
 
